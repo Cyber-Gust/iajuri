@@ -1,0 +1,1265 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JuriAI - O Futuro da Advocacia</title>
+    <meta name="description" content="Plataforma de IA Jurídica para geração de petições e gestão de documentos. Aumente a produtividade do seu escritório em 10x.">
+    <meta name="theme-color" content="#0f172a">
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+    <!-- Social/Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="JuriAI - Inteligência Artificial Jurídica">
+    <meta property="og:description" content="Crie petições perfeitas em minutos. Tecnologia treinada em milhões de processos brasileiros.">
+    <meta property="og:image" content="https://cdn-icons-png.flaticon.com/512/2620/2620544.png">
+
+    <!-- Fonts: Inter (UI), Plus Jakarta Sans (Headings), Noto Serif (Documentos) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Noto+Serif:wght@400;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        heading: ['Plus Jakarta Sans', 'sans-serif'],
+                        serif: ['Noto Serif', 'serif'], // Essencial para o editor de petição
+                    },
+                    colors: {
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe',
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            800: '#1e40af',
+                            900: '#1e3a8a'
+                        },
+                        navy: {
+                            800: '#1e293b',
+                            900: '#0f172a' // Azul profundo para jurídico
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Icons -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <!-- App Logic -->
+    <script src="script.js" defer></script>
+
+    <style>
+        /* Efeitos Visuais */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .grid-bg {
+            background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px),
+            linear-gradient(to bottom, #e2e8f0 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Scrollbar Personalizada para o Editor */
+        .custom-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scroll::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+        .custom-scroll::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Sombra realista de papel para a petição */
+        .paper-shadow {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06), 0 0 0 1px rgba(0,0,0,0.05);
+        }
+    </style>
+</head>
+
+<body class="bg-white text-slate-800 font-sans antialiased selection:bg-primary-100 selection:text-primary-900">
+
+    <section id="landing-page" class="relative overflow-hidden">
+
+        <header class="fixed w-full z-50 top-0 border-b border-slate-100 glass-effect transition-all duration-300">
+            <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="navigateTo('landing-page')">
+                    <div class="bg-primary-600 text-white p-1.5 rounded-lg">
+                        <i class="ph-bold ph-scales text-xl"></i>
+                    </div>
+                    <strong class="font-heading text-xl text-slate-900 tracking-tight">
+                        Juri<span class="text-primary-600">AI</span>
+                    </strong>
+                </div>
+
+                <nav class="hidden md:flex items-center gap-8">
+                    <a href="#beneficios" class="text-sm font-medium text-slate-600 hover:text-primary-600 transition">Benefícios</a>
+                    <a href="#como-funciona" class="text-sm font-medium text-slate-600 hover:text-primary-600 transition">Como Funciona</a>
+                    <a href="#planos-landing" class="text-sm font-medium text-slate-600 hover:text-primary-600 transition">Preços</a>
+
+                    <div class="flex items-center gap-4 pl-4 border-l border-slate-200">
+                        <button class="text-sm font-semibold text-slate-700 hover:text-primary-700 transition"
+                            onclick="navigateTo('login-page')">
+                            Entrar
+                        </button>
+
+                        <button class="bg-navy-900 hover:bg-primary-700 text-white px-5 py-2.5 rounded-lg text-sm font-bold shadow-lg shadow-slate-900/10 transition-all hover:-translate-y-0.5 flex items-center gap-2"
+                            onclick="navigateTo('signup-page')">
+                            Testar Grátis
+                            <i class="ph-bold ph-arrow-right"></i>
+                        </button>
+                    </div>
+                </nav>
+            </div>
+        </header>
+
+
+        <div class="pt-32 pb-16 lg:pt-48 lg:pb-24 relative overflow-hidden">
+            <div class="absolute inset-0 -z-10">
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[600px] bg-primary-100/50 rounded-full blur-3xl opacity-50"></div>
+                <div class="absolute inset-0 grid-bg opacity-[0.3]"></div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-6 relative z-10 grid lg:grid-cols-12 gap-12 items-center">
+                
+                <div class="lg:col-span-6 text-center lg:text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-slate-200 shadow-sm text-slate-600 text-xs font-semibold mb-6 animate-float">
+                        <span class="text-green-500 text-base"><i class="ph-fill ph-check-circle"></i></span>
+                        Atualizado com o Novo CPC e Jurisprudência 2025
+                    </div>
+
+                    <h1 class="font-heading text-4xl lg:text-6xl font-extrabold text-slate-900 leading-[1.1] mb-6">
+                        Escreva petições de
+                        <span class="relative whitespace-nowrap text-primary-600">
+                            <svg aria-hidden="true" viewBox="0 0 418 42" class="absolute top-2/3 left-0 h-[0.58em] w-full fill-primary-200/60" preserveAspectRatio="none"><path d="M203.371.916c-26.013-2.078-76.686 1.963-124.73 9.946L67.3 12.749C61.669 13.798 26.853 20.156 10.933 26.708c-11.13 4.576-11.13 9.829-2.506 12.43 10.987 3.315 67.034-6.721 104.957-13.413l7.537-1.264c42.709-7.014 119.579-15.775 192.766-16.517 35.95-3.64 55.87-5.771 67.938-6.788 23.517-1.983 41.306 2.457 32.466 11.376-3.397 3.425-20.424 7.74-46.254 10.13-28.466 2.633-83.375 1.38-125.906-4.077l-9.424-1.251c-22.143-3.153-55.992-9.385-56.353-13.372-.504-5.578 40.418-16.645 78.21-20.037 28.352-2.545 63.366.698 87.32 3.556 21.295 2.539 46.938 5.317 47.36 5.302 1.796-.064 3.28-1.511 3.316-3.31.036-1.848-1.441-3.366-3.265-3.343-.22.003-25.826-2.785-47.19-5.33-24.226-2.89-59.893-6.23-88.945-3.631z"></path></svg>
+                            <span class="relative">alta complexidade</span>
+                        </span>
+                        em minutos, não horas.
+                    </h1>
+
+                    <p class="text-lg text-slate-600 mb-8 leading-relaxed max-w-xl mx-auto lg:mx-0">
+                        A primeira IA treinada com +10 milhões de processos brasileiros. Aumente a produtividade do seu escritório em 10x mantendo a excelência técnica.
+                    </p>
+
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+                        <button
+                            onclick="navigateTo('signup-page')"
+                            class="bg-primary-600 hover:bg-primary-700 text-white px-8 py-4 rounded-xl text-base font-bold shadow-xl shadow-primary-600/20 transition-all hover:-translate-y-1 flex items-center justify-center gap-2 w-full sm:w-auto">
+                            Começar Gratuitamente
+                        </button>
+
+                        <div class="flex items-center gap-3 px-4 py-2">
+                            <div class="flex -space-x-2">
+                                <img class="w-8 h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=11" alt="Advogado">
+                                <img class="w-8 h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=33" alt="Advogado">
+                                <img class="w-8 h-8 rounded-full border-2 border-white" src="https://i.pravatar.cc/100?img=12" alt="Advogado">
+                            </div>
+                            <div class="text-left">
+                                <div class="flex text-yellow-400 text-xs">
+                                    <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                                </div>
+                                <span class="text-xs text-slate-500 font-medium">+1.200 Advogados usam</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="mt-4 text-xs text-slate-400 font-medium flex items-center justify-center lg:justify-start gap-1">
+                        <i class="ph-fill ph-lock-key"></i> Dados protegidos com criptografia bancária.
+                    </p>
+                </div>
+
+
+                <div class="lg:col-span-6 relative mt-12 lg:mt-0">
+                    <div class="absolute -inset-4 bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full blur-3xl opacity-20 animate-pulse"></div>
+                    
+                    <div class="relative bg-white rounded-2xl shadow-2xl border border-slate-200 overflow-hidden transform lg:rotate-1 transition hover:rotate-0 duration-500">
+                        <div class="bg-slate-50 border-b border-slate-100 p-3 flex items-center justify-between">
+                            <div class="flex gap-1.5">
+                                <div class="w-2.5 h-2.5 rounded-full bg-slate-300"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-slate-300"></div>
+                            </div>
+                            <div class="text-[10px] text-slate-400 font-mono bg-white px-2 py-0.5 rounded border border-slate-100">JuriAI Editor v2.0</div>
+                        </div>
+
+                        <div class="p-6">
+                            <div class="flex gap-4 mb-6">
+                                <div class="w-1/3">
+                                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 h-full">
+                                        <p class="text-[10px] font-bold text-slate-400 uppercase mb-2">Entrada</p>
+                                        <p class="text-xs text-slate-600 leading-relaxed">
+                                            "Cliente comprou geladeira, veio amassada, loja negou troca. Dano moral e material. CDC."
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="flex items-center text-primary-500">
+                                    <i class="ph-bold ph-arrow-right"></i>
+                                </div>
+                                <div class="w-2/3">
+                                    <div class="bg-blue-50/50 p-3 rounded-lg border border-blue-100 relative">
+                                        <div class="absolute top-2 right-2 text-primary-600 text-xs flex gap-1 items-center">
+                                            <i class="ph-fill ph-sparkle"></i> IA Gerando
+                                        </div>
+                                        <p class="text-[10px] font-bold text-primary-400 uppercase mb-2">Resultado</p>
+                                        <div class="space-y-2">
+                                            <div class="h-2 bg-slate-200 rounded w-full"></div>
+                                            <div class="h-2 bg-slate-200 rounded w-11/12"></div>
+                                            <div class="h-2 bg-slate-200 rounded w-full"></div>
+                                            <div class="h-2 bg-slate-200 rounded w-3/4"></div>
+                                        </div>
+                                        <div class="mt-3 p-2 bg-white rounded border border-blue-100 shadow-sm">
+                                            <p class="text-[10px] text-slate-700 font-serif">
+                                                "EXCELENTÍSSIMO SENHOR DOUTOR JUIZ DE DIREITO DO JUIZADO ESPECIAL CÍVEL..."
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="border-y border-slate-100 bg-slate-50 py-8">
+            <div class="max-w-7xl mx-auto px-6 text-center">
+                <p class="text-sm font-medium text-slate-500 mb-6">Tecnologia utilizada por advogados inovadores em:</p>
+                <div class="flex flex-wrap justify-center gap-8 md:gap-16 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+                   <span class="font-heading font-bold text-xl text-slate-400">Advocacia Smith</span>
+                   <span class="font-heading font-bold text-xl text-slate-400">Barros & Silva</span>
+                   <span class="font-heading font-bold text-xl text-slate-400">Legal Tech Co.</span>
+                   <span class="font-heading font-bold text-xl text-slate-400">Modern Law</span>
+                   <span class="font-heading font-bold text-xl text-slate-400">JusConsult</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="beneficios" class="py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center mb-16">
+                    <h2 class="font-heading text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+                        Pare de advogar como no <span class="line-through decoration-red-400 decoration-2">século passado</span>
+                    </h2>
+                    <p class="text-slate-600 max-w-2xl mx-auto">A advocacia mudou. Quem não usa inteligência artificial está ficando para trás em velocidade e qualidade.</p>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+                    <div class="bg-slate-50 rounded-2xl p-8 border border-slate-200 opacity-80">
+                        <div class="flex items-center gap-3 mb-6 border-b border-slate-200 pb-4">
+                            <i class="ph-fill ph-x-circle text-red-500 text-2xl"></i>
+                            <h3 class="font-bold text-slate-700 text-lg">Método Tradicional</h3>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3 text-slate-600 text-sm">
+                                <i class="ph-bold ph-clock text-slate-400 mt-0.5"></i>
+                                4 horas para redigir uma inicial complexa.
+                            </li>
+                            <li class="flex items-start gap-3 text-slate-600 text-sm">
+                                <i class="ph-bold ph-magnifying-glass text-slate-400 mt-0.5"></i>
+                                Pesquisa jurisprudencial manual e demorada.
+                            </li>
+                            <li class="flex items-start gap-3 text-slate-600 text-sm">
+                                <i class="ph-bold ph-copy text-slate-400 mt-0.5"></i>
+                                Copia e cola de modelos desatualizados (risco de erro).
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white rounded-2xl p-8 border-2 border-primary-500 shadow-2xl shadow-primary-500/10 relative overflow-hidden">
+                        <div class="absolute top-0 right-0 bg-primary-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg">RECOMENDADO</div>
+                        <div class="flex items-center gap-3 mb-6 border-b border-slate-100 pb-4">
+                            <i class="ph-fill ph-check-circle text-green-500 text-2xl"></i>
+                            <h3 class="font-bold text-slate-900 text-lg">Com JuriAI</h3>
+                        </div>
+                        <ul class="space-y-4">
+                            <li class="flex items-start gap-3 text-slate-700 font-medium text-sm">
+                                <i class="ph-fill ph-lightning text-primary-600 mt-0.5"></i>
+                                15 minutos para gerar, revisar e protocolar.
+                            </li>
+                            <li class="flex items-start gap-3 text-slate-700 font-medium text-sm">
+                                <i class="ph-fill ph-brain text-primary-600 mt-0.5"></i>
+                                IA sugere as melhores teses baseadas no tribunal local.
+                            </li>
+                            <li class="flex items-start gap-3 text-slate-700 font-medium text-sm">
+                                <i class="ph-fill ph-shield-check text-primary-600 mt-0.5"></i>
+                                Peças personalizadas e fundamentadas caso a caso.
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="como-funciona" class="py-24 bg-slate-900 text-white relative overflow-hidden">
+            <div class="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-primary-600 rounded-full opacity-20 blur-3xl"></div>
+            <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-blue-400 rounded-full opacity-10 blur-3xl"></div>
+
+            <div class="max-w-7xl mx-auto px-6 relative z-10">
+                <div class="text-center mb-16">
+                    <span class="text-primary-400 font-bold tracking-wider uppercase text-xs">Simples e Poderoso</span>
+                    <h2 class="font-heading text-3xl md:text-4xl font-bold mt-2">Do fato ao Direito em 3 passos</h2>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-10 text-center">
+                    <div class="group">
+                        <div class="w-16 h-16 mx-auto bg-slate-800 rounded-2xl flex items-center justify-center text-3xl text-primary-400 mb-6 border border-slate-700 group-hover:border-primary-500 group-hover:bg-slate-700 transition-all duration-300">
+                            <i class="ph-duotone ph-chat-text"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">1. Descreva o Caso</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            Digite os fatos de forma resumida ou faça upload de documentos/áudios do cliente.
+                        </p>
+                    </div>
+
+                    <div class="group">
+                        <div class="w-16 h-16 mx-auto bg-slate-800 rounded-2xl flex items-center justify-center text-3xl text-primary-400 mb-6 border border-slate-700 group-hover:border-primary-500 group-hover:bg-slate-700 transition-all duration-300 relative">
+                            <i class="ph-duotone ph-cpu"></i>
+                            <div class="absolute -right-2 -top-2 w-6 h-6 bg-green-500 rounded-full text-[10px] flex items-center justify-center text-slate-900 font-bold">AI</div>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">2. A IA Trabalha</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            Nosso algoritmo busca a legislação pertinente e jurisprudência favorável em segundos.
+                        </p>
+                    </div>
+
+                    <div class="group">
+                        <div class="w-16 h-16 mx-auto bg-slate-800 rounded-2xl flex items-center justify-center text-3xl text-primary-400 mb-6 border border-slate-700 group-hover:border-primary-500 group-hover:bg-slate-700 transition-all duration-300">
+                            <i class="ph-duotone ph-file-doc"></i>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3">3. Exportação Pronta</h3>
+                        <p class="text-slate-400 text-sm leading-relaxed">
+                            Receba o documento em .DOCX formatado, pronto para revisão final e protocolo.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="py-24 bg-slate-50">
+            <div class="max-w-7xl mx-auto px-6">
+                <h2 class="font-heading text-3xl font-bold text-center text-slate-900 mb-16">O que dizem nossos usuários</h2>
+                
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="flex text-yellow-400 text-sm mb-4">
+                            <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-6">"Eu era cético quanto ao uso de IA no Direito, mas a JuriAI me surpreendeu pela qualidade técnica. Recuperou meu tempo livre."</p>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-slate-200 rounded-full overflow-hidden">
+                                <img src="https://i.pravatar.cc/150?img=68" alt="User">
+                            </div>
+                            <div>
+                                <strong class="block text-sm text-slate-900">Dr. Ricardo M.</strong>
+                                <span class="text-xs text-slate-500">Advogado Trabalhista</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="flex text-yellow-400 text-sm mb-4">
+                            <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-6">"Minha equipe de estagiários agora foca em estratégia, enquanto a JuriAI cuida do braçal. A produtividade triplicou."</p>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-slate-200 rounded-full overflow-hidden">
+                                <img src="https://i.pravatar.cc/150?img=44" alt="User">
+                            </div>
+                            <div>
+                                <strong class="block text-sm text-slate-900">Dra. Ana Paula</strong>
+                                <span class="text-xs text-slate-500">Sócia Fundadora</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+                        <div class="flex text-yellow-400 text-sm mb-4">
+                            <i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i><i class="ph-fill ph-star"></i>
+                        </div>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-6">"A assertividade na busca de jurisprudência é impressionante. O que eu levava horas no site do tribunal, faço em segundos."</p>
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-slate-200 rounded-full overflow-hidden">
+                                <img src="https://i.pravatar.cc/150?img=12" alt="User">
+                            </div>
+                            <div>
+                                <strong class="block text-sm text-slate-900">Dr. Carlos E.</strong>
+                                <span class="text-xs text-slate-500">Advogado Civil</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="planos-landing" class="py-24 bg-white">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="text-center max-w-2xl mx-auto mb-16">
+                    <h2 class="font-heading text-3xl font-bold text-slate-900">Investimento que se paga na primeira causa</h2>
+                    <p class="text-slate-600 mt-4">Sem contratos de fidelidade. Cancele quando quiser.</p>
+                </div>
+
+                <div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+                    <div class="bg-slate-50 p-8 rounded-2xl shadow-sm border border-slate-200">
+                        <h4 class="text-lg font-bold text-slate-900">Iniciante</h4>
+                        <div class="my-4">
+                            <span class="text-4xl font-extrabold text-slate-900">Gratuito</span>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-6">Para testar a potência da IA.</p>
+                        <button onclick="navigateTo('signup-page')" class="w-full py-3 rounded-xl border border-slate-300 text-slate-700 font-bold hover:bg-white transition mb-8">Começar Agora</button>
+                        <ul class="space-y-3">
+                            <li class="flex gap-2 text-sm text-slate-600"><i class="ph-bold ph-check text-green-500"></i> 3 Petições/mês</li>
+                            <li class="flex gap-2 text-sm text-slate-600"><i class="ph-bold ph-check text-green-500"></i> Jurisprudência Básica</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-navy-900 text-white p-8 rounded-2xl shadow-2xl relative transform md:-translate-y-4 border border-slate-700">
+                        <div class="absolute top-0 right-0 bg-primary-500 text-white px-3 py-1 rounded-bl-xl rounded-tr-xl text-xs font-bold uppercase">Mais Escolhido</div>
+                        <h4 class="text-lg font-bold">Profissional</h4>
+                        <div class="my-4 flex items-end gap-1">
+                            <span class="text-4xl font-extrabold">R$ 89</span>
+                            <span class="text-slate-400 text-sm mb-1">/mês</span>
+                        </div>
+                        <p class="text-sm text-slate-300 mb-6">Para advogados atuantes.</p>
+                        <button onclick="navigateTo('signup-page')" class="w-full py-3 rounded-xl bg-primary-600 text-white font-bold hover:bg-primary-700 transition shadow-lg shadow-primary-600/30 mb-8">Assinar Profissional</button>
+                        <ul class="space-y-3">
+                            <li class="flex gap-2 text-sm text-slate-200"><i class="ph-bold ph-check text-primary-400"></i> 50 Petições/mês</li>
+                            <li class="flex gap-2 text-sm text-slate-200"><i class="ph-bold ph-check text-primary-400"></i> Editor Inteligente</li>
+                            <li class="flex gap-2 text-sm text-slate-200"><i class="ph-bold ph-check text-primary-400"></i> Exportação Word/PDF</li>
+                            <li class="flex gap-2 text-sm text-slate-200"><i class="ph-bold ph-check text-primary-400"></i> Suporte WhatsApp</li>
+                        </ul>
+                    </div>
+
+                    <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-200">
+                        <h4 class="text-lg font-bold text-slate-900">Escritório</h4>
+                        <div class="my-4 flex items-end gap-1">
+                            <span class="text-4xl font-extrabold text-slate-900">R$ 199</span>
+                            <span class="text-slate-500 text-sm mb-1">/mês</span>
+                        </div>
+                        <p class="text-sm text-slate-500 mb-6">Para equipes de alta performance.</p>
+                        <button onclick="navigateTo('signup-page')" class="w-full py-3 rounded-xl border border-slate-300 text-slate-700 font-bold hover:bg-slate-50 transition mb-8">Falar com Vendas</button>
+                        <ul class="space-y-3">
+                            <li class="flex gap-2 text-sm text-slate-600"><i class="ph-bold ph-check text-green-500"></i> Tudo Ilimitado</li>
+                            <li class="flex gap-2 text-sm text-slate-600"><i class="ph-bold ph-check text-green-500"></i> 5 Usuários inclusos</li>
+                            <li class="flex gap-2 text-sm text-slate-600"><i class="ph-bold ph-check text-green-500"></i> API de Integração</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="py-20 bg-slate-50">
+            <div class="max-w-3xl mx-auto px-6">
+                <h2 class="font-heading text-2xl font-bold text-center text-slate-900 mb-12">Perguntas Frequentes</h2>
+                
+                <div class="space-y-4">
+                    <details class="group bg-white p-6 rounded-xl border border-slate-200 cursor-pointer">
+                        <summary class="flex justify-between items-center font-medium text-slate-900 list-none">
+                            <span>A IA pode alucinar ou inventar leis?</span>
+                            <span class="transition group-open:rotate-180">
+                                <i class="ph-bold ph-caret-down"></i>
+                            </span>
+                        </summary>
+                        <p class="text-slate-600 mt-4 text-sm leading-relaxed">
+                            Nossa IA possui uma camada de verificação ("Guardrails") que cruza todas as citações com o banco de dados oficial do Planalto e Tribunais Superiores. Se ela não encontrar a lei, ela não cita.
+                        </p>
+                    </details>
+
+                    <details class="group bg-white p-6 rounded-xl border border-slate-200 cursor-pointer">
+                        <summary class="flex justify-between items-center font-medium text-slate-900 list-none">
+                            <span>Meus dados e de meus clientes estão seguros?</span>
+                            <span class="transition group-open:rotate-180">
+                                <i class="ph-bold ph-caret-down"></i>
+                            </span>
+                        </summary>
+                        <p class="text-slate-600 mt-4 text-sm leading-relaxed">
+                            Sim. Utilizamos criptografia de ponta a ponta e não utilizamos os dados dos seus casos para treinar a IA pública. Estamos 100% em conformidade com a LGPD.
+                        </p>
+                    </details>
+                    
+                    <details class="group bg-white p-6 rounded-xl border border-slate-200 cursor-pointer">
+                        <summary class="flex justify-between items-center font-medium text-slate-900 list-none">
+                            <span>O documento já vem formatado?</span>
+                            <span class="transition group-open:rotate-180">
+                                <i class="ph-bold ph-caret-down"></i>
+                            </span>
+                        </summary>
+                        <p class="text-slate-600 mt-4 text-sm leading-relaxed">
+                            Sim, exportamos em padrão ABNT jurídico, editável (.docx) ou PDF, pronto para ser anexado ao PJe ou E-SAJ.
+                        </p>
+                    </details>
+                </div>
+            </div>
+        </div>
+
+        <div class="py-20 bg-white border-t border-slate-100">
+            <div class="max-w-4xl mx-auto px-6 text-center">
+                <h2 class="font-heading text-3xl md:text-4xl font-bold text-slate-900 mb-6">Pronto para modernizar seu escritório?</h2>
+                <p class="text-slate-600 mb-8 text-lg">Junte-se a mais de 1.200 advogados que já estão usando JuriAI.</p>
+                <button onclick="navigateTo('signup-page')" class="bg-primary-600 hover:bg-primary-700 text-white px-10 py-4 rounded-xl text-lg font-bold shadow-xl shadow-primary-600/25 transition-all hover:-translate-y-1">
+                    Criar conta gratuitamente
+                </button>
+                <p class="text-xs text-slate-400 mt-4">Não requer cartão de crédito para iniciar.</p>
+            </div>
+        </div>
+
+
+        <footer class="bg-slate-50 border-t border-slate-200 pt-16 pb-8">
+            <div class="max-w-7xl mx-auto px-6">
+                <div class="grid md:grid-cols-4 gap-8 mb-12">
+                    <div class="col-span-1 md:col-span-2">
+                        <div class="flex items-center gap-2 mb-4">
+                            <i class="ph-fill ph-scales text-2xl text-primary-600"></i>
+                            <strong class="font-heading text-xl text-slate-900">JuriAI</strong>
+                        </div>
+                        <p class="text-slate-500 text-sm max-w-xs mb-6">
+                            Inteligência Artificial jurídica feita por advogados, para advogados. Aumentando a eficiência da justiça no Brasil.
+                        </p>
+                        <div class="flex gap-4">
+                            <a href="#" class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-primary-600 hover:border-primary-600 transition"><i class="ph-fill ph-instagram-logo"></i></a>
+                            <a href="#" class="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-400 hover:text-primary-600 hover:border-primary-600 transition"><i class="ph-fill ph-linkedin-logo"></i></a>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <h4 class="font-bold text-slate-900 mb-4">Produto</h4>
+                        <ul class="space-y-2 text-sm text-slate-500">
+                            <li><a href="#" class="hover:text-primary-600 transition">Funcionalidades</a></li>
+                            <li><a href="#" class="hover:text-primary-600 transition">Preços</a></li>
+                            <li><a href="#" class="hover:text-primary-600 transition">Atualizações</a></li>
+                        </ul>
+                    </div>
+
+                    <div>
+                        <h4 class="font-bold text-slate-900 mb-4">Legal</h4>
+                        <ul class="space-y-2 text-sm text-slate-500">
+                            <li><a href="#" class="hover:text-primary-600 transition">Termos de Uso</a></li>
+                            <li><a href="#" class="hover:text-primary-600 transition">Política de Privacidade</a></li>
+                            <li><a href="#" class="hover:text-primary-600 transition">LGPD</a></li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="border-t border-slate-200 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                    <span class="text-slate-400 text-sm">&copy; 2025 JuriAI Tecnologia Ltda. CNPJ 00.000.000/0001-00.</span>
+                    <div class="flex items-center gap-2 text-xs text-slate-400">
+                        <i class="ph-fill ph-lock-key"></i> Site Seguro com SSL
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </section>
+
+
+
+<!-- ========================================================= -->
+    <!-- ======================== LOGIN (Split) =================== -->
+    <!-- ========================================================= -->
+
+    <section id="login-page" class="hidden min-h-screen w-full bg-white grid lg:grid-cols-2">
+        
+        <!-- Left: Form -->
+        <div class="flex flex-col justify-center p-8 sm:p-12 lg:p-20">
+            <div class="max-w-md mx-auto w-full">
+                <div class="flex items-center gap-2 mb-10 cursor-pointer" onclick="navigateTo('landing-page')">
+                     <i class="ph-bold ph-scales text-2xl text-primary-600"></i>
+                     <strong class="font-heading text-xl text-slate-900">JuriAI</strong>
+                </div>
+
+                <h2 class="text-3xl font-bold font-heading text-slate-900 mb-2">Bem-vindo de volta</h2>
+                <p class="text-slate-500 mb-8">Insira seus dados para acessar o escritório.</p>
+
+                <form onsubmit="event.preventDefault(); navigateTo('app-wrapper');" class="space-y-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1.5">E-mail profissional</label>
+                        <input type="email" class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition" placeholder="nome@advocacia.com.br" required>
+                    </div>
+                    <div>
+                        <div class="flex justify-between mb-1.5">
+                            <label class="block text-sm font-semibold text-slate-700">Senha</label>
+                            <a href="#" class="text-xs font-medium text-primary-600 hover:text-primary-700">Esqueceu?</a>
+                        </div>
+                        <input type="password" class="w-full px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none transition" placeholder="••••••••" required>
+                    </div>
+                    <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-primary-600/20 transition-all hover:-translate-y-0.5 flex justify-center items-center gap-2">
+                        <i class="ph-bold ph-sign-in"></i> Acessar Plataforma
+                    </button>
+                </form>
+
+                <p class="mt-8 text-center text-sm text-slate-600">
+                    Não tem uma conta? <a href="#" onclick="navigateTo('signup-page')" class="font-bold text-primary-600 hover:underline">Cadastre-se grátis</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Right: Visual & Social Proof -->
+        <div class="hidden lg:flex flex-col justify-between bg-navy-900 relative overflow-hidden p-12 text-white">
+            <!-- Abstract Shapes -->
+            <div class="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-primary-600 rounded-full opacity-20 blur-3xl animate-pulse-slow"></div>
+            <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-blue-400 rounded-full opacity-10 blur-3xl"></div>
+            <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMSIgY3k9IjEiIHI9IjEiIGZpbGw9InJnYmEoMjU1LCAyNTUsIDI1NSwgMC4wNSkiLz48L3N2Zz4=')] opacity-30"></div>
+
+            <div class="relative z-10 mt-auto">
+                <div class="mb-8 text-primary-400 text-4xl">
+                    <i class="ph-fill ph-quotes"></i>
+                </div>
+                <h3 class="text-3xl font-heading font-bold leading-tight mb-6">
+                    "A JuriAI transformou a rotina do nosso escritório. O que levava dias, agora fazemos em minutos com precisão técnica."
+                </h3>
+                <div class="flex items-center gap-4">
+                    <img src="https://i.pravatar.cc/150?img=68" alt="Dr. Ricardo" class="w-12 h-12 rounded-full border-2 border-primary-500">
+                    <div>
+                        <strong class="block text-white text-lg">Dr. Ricardo Mendes</strong>
+                        <span class="text-slate-400 text-sm">Sócio Sênior @ Mendes & Associados</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- ======================== SIGNUP (Split) ================== -->
+    <!-- ========================================================= -->
+
+    <section id="signup-page" class="hidden min-h-screen w-full bg-white grid lg:grid-cols-2">
+        <!-- Right: Visual (Inverted for Signup) -->
+        <div class="hidden lg:flex flex-col justify-center bg-primary-600 relative overflow-hidden p-12 text-white">
+             <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-white rounded-full opacity-10 blur-3xl"></div>
+             
+             <div class="relative z-10 text-center">
+                <!-- Icon Placeholder -->
+                <div class="w-24 h-24 bg-white/20 backdrop-blur rounded-2xl mx-auto mb-8 flex items-center justify-center text-4xl">
+                    <i class="ph-duotone ph-scales"></i>
+                </div>
+                <h3 class="text-3xl font-heading font-bold mb-4">Junte-se à Elite Jurídica</h3>
+                <p class="text-primary-100 text-lg max-w-md mx-auto">Acesse +10 milhões de modelos e jurisprudência em tempo real.</p>
+             </div>
+        </div>
+
+        <!-- Left: Form -->
+        <div class="flex flex-col justify-center p-8 sm:p-12 lg:p-20 bg-white">
+            <div class="max-w-md mx-auto w-full">
+                <button onclick="navigateTo('landing-page')" class="text-slate-400 hover:text-slate-600 mb-8 flex items-center gap-2 text-sm font-medium">
+                    <i class="ph-bold ph-arrow-left"></i> Voltar
+                </button>
+
+                <h2 class="text-3xl font-bold font-heading text-slate-900 mb-2">Crie sua conta</h2>
+                <p class="text-slate-500 mb-8">Comece com 3 petições gratuitas. Sem cartão.</p>
+
+                <form onsubmit="event.preventDefault(); navigateTo('app-wrapper');" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Nome</label>
+                            <input type="text" class="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none" placeholder="João" required>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Sobrenome</label>
+                            <input type="text" class="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none" placeholder="Silva" required>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">E-mail</label>
+                        <input type="email" class="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none" placeholder="seu@email.com" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Senha</label>
+                        <input type="password" class="w-full px-4 py-2.5 rounded-lg bg-slate-50 border border-slate-200 focus:bg-white focus:ring-2 focus:ring-primary-500 outline-none" placeholder="Min. 8 caracteres" required>
+                    </div>
+                    
+                    <div class="flex items-start gap-2 mt-2">
+                        <input type="checkbox" class="mt-1 rounded text-primary-600 focus:ring-primary-500">
+                        <span class="text-xs text-slate-500">Concordo com os <a href="#" class="underline decoration-slate-300">Termos de Uso</a> e <a href="#" class="underline decoration-slate-300">Privacidade</a>.</span>
+                    </div>
+
+                    <button type="submit" class="w-full bg-navy-900 hover:bg-primary-700 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all hover:-translate-y-0.5 mt-4">
+                        Começar Gratuitamente
+                    </button>
+                </form>
+
+                <p class="mt-8 text-center text-sm text-slate-600">
+                    Já é cadastrado? <a href="#" onclick="navigateTo('login-page')" class="font-bold text-primary-600 hover:underline">Faça Login</a>
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ========================================================= -->
+    <!-- ===================== DASHBOARD WRAPPER ================== -->
+    <!-- ========================================================= -->
+
+    <div id="app-wrapper" class="hidden h-screen flex bg-slate-50 overflow-hidden">
+
+        <!-- SIDEBAR -->
+        <aside class="w-72 bg-white border-r border-slate-200 flex flex-col z-20 shadow-sm hidden lg:flex">
+            <div class="h-20 flex items-center px-6 border-b border-slate-100">
+                <i class="ph-fill ph-scales text-2xl text-primary-600 mr-2"></i>
+                <strong class="font-heading text-xl text-slate-900">Juri<span class="text-primary-600">AI</span></strong>
+            </div>
+
+            <!-- Quick Action -->
+            <div class="p-6 pb-2">
+                <button onclick="switchTab('ai-generator')" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl shadow-lg shadow-primary-600/20 transition flex items-center justify-center gap-2 group">
+                    <i class="ph-bold ph-plus group-hover:rotate-90 transition-transform"></i>
+                    Nova Petição
+                </button>
+            </div>
+
+            <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto custom-scroll">
+                <button onclick="switchTab('dashboard')" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-primary-700 bg-primary-50 transition-colors">
+                    <i class="ph-bold ph-house-simple text-lg"></i> Início
+                </button>
+                
+                <button onclick="switchTab('ai-generator')" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                    <i class="ph-bold ph-magic-wand text-lg"></i> Gerador IA
+                </button>
+                
+                <button onclick="switchTab('my-documents')" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                    <i class="ph-bold ph-folder text-lg"></i> Meus Documentos
+                </button>
+                
+                <button onclick="switchTab('library')" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                    <i class="ph-bold ph-books text-lg"></i> Biblioteca Viva
+                    <span class="ml-auto bg-green-100 text-green-700 text-[10px] font-bold px-2 py-0.5 rounded-full">NOVO</span>
+                </button>
+                
+                <div class="pt-4 mt-4 border-t border-slate-100">
+                    <p class="px-4 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Conta</p>
+                    <button onclick="switchTab('buy-credits')" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                        <i class="ph-bold ph-coins text-lg"></i> Créditos & Planos
+                    </button>
+                    <button onclick="switchTab('settings')" class="nav-item w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors">
+                        <i class="ph-bold ph-gear-six text-lg"></i> Configurações
+                    </button>
+                </div>
+            </nav>
+
+            <!-- User Profile -->
+            <div class="p-4 border-t border-slate-100 bg-slate-50">
+                <div class="flex items-center gap-3">
+                    <img src="https://i.pravatar.cc/150?img=11" alt="User" class="w-10 h-10 rounded-full border border-slate-200">
+                    <div class="flex-1 min-w-0">
+                        <p class="text-sm font-bold text-slate-900 truncate">Dr. João Silva</p>
+                        <p class="text-xs text-slate-500 truncate">Plano Free</p>
+                    </div>
+                    <button onclick="navigateTo('landing-page')" class="text-slate-400 hover:text-red-500 transition"><i class="ph-bold ph-sign-out"></i></button>
+                </div>
+            </div>
+        </aside>
+
+
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden">
+            
+            <!-- Topbar Mobile -->
+            <header class="lg:hidden h-16 bg-white border-b border-slate-200 flex items-center justify-between px-4">
+                <strong class="font-heading text-lg">JuriAI</strong>
+                <button class="text-slate-600"><i class="ph-bold ph-list text-2xl"></i></button>
+            </header>
+
+            <!-- Scrollable Content Area -->
+            <div id="main-content-area" class="flex-1 overflow-y-auto p-6 lg:p-10 custom-scroll">
+
+                <!-- ============================================ -->
+                <!-- =============== DASHBOARD HOME ============= -->
+                <!-- ============================================ -->
+                <section id="dashboard" class="app-section animate-fade-in">
+                    <header class="mb-8 flex justify-between items-end">
+                        <div>
+                            <h2 class="font-heading text-2xl lg:text-3xl font-bold text-slate-900">Visão Geral</h2>
+                            <p class="text-slate-500 text-sm mt-1">Resumo das atividades do seu escritório.</p>
+                        </div>
+                        <div class="text-right hidden sm:block">
+                            <p class="text-xs text-slate-500 font-medium uppercase tracking-wide">Data de Hoje</p>
+                            <p class="text-slate-900 font-semibold">18 de Novembro, 2025</p>
+                        </div>
+                    </header>
+
+                    <!-- Stats Cards -->
+                    <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-2 bg-primary-50 text-primary-600 rounded-lg"><i class="ph-fill ph-coins text-xl"></i></div>
+                                <span class="text-xs font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">+2 un</span>
+                            </div>
+                            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Créditos</p>
+                            <h3 id="stat-credits" class="text-2xl font-bold text-slate-900 mt-1">15</h3>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-2 bg-blue-50 text-blue-600 rounded-lg"><i class="ph-fill ph-files text-xl"></i></div>
+                            </div>
+                            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Petições Criadas</p>
+                            <h3 id="stat-petitions" class="text-2xl font-bold text-slate-900 mt-1">42</h3>
+                        </div>
+
+                        <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="p-2 bg-purple-50 text-purple-600 rounded-lg"><i class="ph-fill ph-clock-counter-clockwise text-xl"></i></div>
+                            </div>
+                            <p class="text-slate-500 text-xs font-medium uppercase tracking-wider">Tempo Economizado</p>
+                            <h3 class="text-2xl font-bold text-slate-900 mt-1">~14h</h3>
+                        </div>
+                    </div>
+
+                    <!-- Recent Activity / Empty State -->
+                    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                        <div class="p-6 border-b border-slate-100 flex justify-between items-center">
+                            <h3 class="font-bold text-slate-900">Atividade Recente</h3>
+                            <button onclick="switchTab('my-documents')" class="text-sm text-primary-600 font-medium hover:underline">Ver tudo</button>
+                        </div>
+                        <div class="p-12 text-center">
+                             <div class="inline-flex items-center justify-center w-16 h-16 rounded-full bg-slate-50 text-slate-300 mb-4">
+                                <i class="ph-duotone ph-ghost text-3xl"></i>
+                             </div>
+                             <p class="text-slate-900 font-medium">Nada por aqui ainda</p>
+                             <p class="text-slate-500 text-sm mb-6">Comece criando sua primeira petição com IA.</p>
+                             <button onclick="switchTab('ai-generator')" class="text-sm font-bold text-primary-600 border border-primary-200 bg-primary-50 px-4 py-2 rounded-lg hover:bg-primary-100 transition">
+                                Criar Agora
+                             </button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================================ -->
+                <!-- =========== GERADOR DE PETIÇÃO (IA) ========= -->
+                <!-- ============================================ -->
+                <section id="ai-generator" class="app-section hidden">
+                    <header class="mb-6">
+                        <h2 class="font-heading text-2xl lg:text-3xl font-bold text-slate-900">Gerador Inteligente</h2>
+                    </header>
+
+                    <div class="grid lg:grid-cols-12 gap-6 h-[calc(100vh-180px)]">
+                        
+                        <!-- INPUT (Left) -->
+                        <div class="lg:col-span-4 flex flex-col gap-4 h-full overflow-y-auto pr-2 custom-scroll">
+                            <!-- Context Card -->
+                            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Tipo de Ação</label>
+                                <select id="select-area" class="w-full px-3 py-2.5 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none">
+                                    <option>Cível - Indenizatória</option>
+                                    <option>Trabalhista - Reclamatória</option>
+                                    <option>Família - Divórcio</option>
+                                    <option>Consumidor - Danos</option>
+                                </select>
+                            </div>
+
+                            <!-- Input Card -->
+                            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm flex-1 flex flex-col">
+                                <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-2">Fatos & Detalhes</label>
+                                <textarea id="petition-input" class="flex-1 w-full p-3 rounded-lg border border-slate-300 text-sm focus:ring-2 focus:ring-primary-500 outline-none resize-none bg-slate-50 focus:bg-white transition" placeholder="Descreva o caso aqui. Ex: Cliente comprou passagem aérea, voo cancelado sem aviso prévio, perdeu reunião importante..."></textarea>
+                                
+                                <!-- Suggestions Chips -->
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    <button onclick="addText('Solicito Dano Moral e Material.')" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded-md transition">+ Dano Moral</button>
+                                    <button onclick="addText('Inversão do ônus da prova.')" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded-md transition">+ Inversão Ônus</button>
+                                    <button onclick="addText('Tutela de Urgência.')" class="text-[10px] bg-slate-100 hover:bg-slate-200 text-slate-600 px-2 py-1 rounded-md transition">+ Tutela</button>
+                                </div>
+
+                                <div class="mt-4 pt-4 border-t border-slate-100">
+                                    <button id="generate-btn" class="w-full bg-navy-900 hover:bg-primary-700 text-white font-bold py-3 rounded-lg shadow-md flex items-center justify-center gap-2 transition-all active:scale-95">
+                                        <i class="ph-bold ph-sparkle"></i> Gerar Petição
+                                    </button>
+                                    <p class="text-[10px] text-center text-slate-400 mt-2">Custo: 5 créditos</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- OUTPUT (Right - Editor Look) -->
+                        <div class="lg:col-span-8 bg-white border border-slate-200 rounded-xl shadow-sm flex flex-col h-full overflow-hidden relative">
+                            
+                            <!-- Toolbar -->
+                            <div class="h-12 bg-slate-50 border-b border-slate-200 flex items-center px-4 gap-2 overflow-x-auto">
+                                <div class="flex gap-1 border-r border-slate-200 pr-2">
+                                    <button class="p-1.5 text-slate-500 hover:bg-slate-200 rounded"><i class="ph-bold ph-text-b"></i></button>
+                                    <button class="p-1.5 text-slate-500 hover:bg-slate-200 rounded"><i class="ph-bold ph-text-i"></i></button>
+                                    <button class="p-1.5 text-slate-500 hover:bg-slate-200 rounded"><i class="ph-bold ph-text-u"></i></button>
+                                </div>
+                                <div class="flex gap-1 border-r border-slate-200 pr-2">
+                                    <button class="p-1.5 text-slate-500 hover:bg-slate-200 rounded"><i class="ph-bold ph-list-bullets"></i></button>
+                                    <button class="p-1.5 text-slate-500 hover:bg-slate-200 rounded"><i class="ph-bold ph-list-numbers"></i></button>
+                                </div>
+                                <div class="ml-auto flex gap-2">
+                                    <button class="text-xs font-semibold text-primary-600 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                                        <i class="ph-bold ph-download-simple"></i> Word
+                                    </button>
+                                    <button class="text-xs font-semibold text-primary-600 hover:bg-primary-50 px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                                        <i class="ph-bold ph-file-pdf"></i> PDF
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- Paper/Content -->
+                            <div class="flex-1 bg-slate-100 p-6 overflow-y-auto custom-scroll relative">
+                                
+                                <!-- Loading State Overlay -->
+                                <div id="loading-overlay" class="hidden absolute inset-0 z-10 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center">
+                                    <div class="w-16 h-16 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin mb-4"></div>
+                                    <p class="text-slate-700 font-medium animate-pulse">Analisando Jurisprudência...</p>
+                                </div>
+
+                                <!-- The Document Page -->
+                                <div id="output-container" class="max-w-[21cm] mx-auto min-h-[29.7cm] bg-white paper-shadow p-[2.5cm] font-serif text-slate-900 leading-relaxed text-justify hidden">
+                                    <!-- Content injected by JS -->
+                                </div>
+
+                                <!-- Empty State Placeholder -->
+                                <div id="editor-placeholder" class="h-full flex flex-col items-center justify-center text-slate-400 opacity-50">
+                                    <i class="ph-duotone ph-file-text text-6xl mb-4"></i>
+                                    <p>Aguardando geração...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================================ -->
+                <!-- ============= MINHAS PETIÇÕES ============== -->
+                <!-- ============================================ -->
+                <section id="my-documents" class="app-section hidden">
+                    <header class="mb-8 flex justify-between items-center">
+                        <h2 class="font-heading text-2xl lg:text-3xl font-bold text-slate-900">Documentos</h2>
+                        <div class="relative">
+                            <i class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" placeholder="Buscar petição..." class="pl-10 pr-4 py-2 rounded-lg border border-slate-200 text-sm focus:ring-2 focus:ring-primary-500 outline-none w-64">
+                        </div>
+                    </header>
+
+                    <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                        <table class="w-full text-left border-collapse">
+                            <thead class="bg-slate-50 border-b border-slate-200 text-xs uppercase text-slate-500 font-semibold">
+                                <tr>
+                                    <th class="px-6 py-4">Nome do Documento</th>
+                                    <th class="px-6 py-4">Área</th>
+                                    <th class="px-6 py-4">Status</th>
+                                    <th class="px-6 py-4">Data</th>
+                                    <th class="px-6 py-4 text-right">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100 text-sm text-slate-700">
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
+                                        <div class="bg-blue-100 text-blue-600 p-1.5 rounded"><i class="ph-fill ph-file-doc"></i></div>
+                                        Ação de Indenização - Silva vs Gol
+                                    </td>
+                                    <td class="px-6 py-4">Consumidor</td>
+                                    <td class="px-6 py-4"><span class="bg-green-100 text-green-700 px-2 py-1 rounded-full text-xs font-bold">Finalizado</span></td>
+                                    <td class="px-6 py-4">18 Nov, 2025</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-slate-400 hover:text-primary-600 transition"><i class="ph-bold ph-pencil-simple"></i></button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition">
+                                    <td class="px-6 py-4 font-medium text-slate-900 flex items-center gap-3">
+                                        <div class="bg-amber-100 text-amber-600 p-1.5 rounded"><i class="ph-fill ph-file-dashed"></i></div>
+                                        Contestação Trabalhista
+                                    </td>
+                                    <td class="px-6 py-4">Trabalhista</td>
+                                    <td class="px-6 py-4"><span class="bg-amber-100 text-amber-700 px-2 py-1 rounded-full text-xs font-bold">Rascunho</span></td>
+                                    <td class="px-6 py-4">15 Nov, 2025</td>
+                                    <td class="px-6 py-4 text-right">
+                                        <button class="text-slate-400 hover:text-primary-600 transition"><i class="ph-bold ph-pencil-simple"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                 <!-- ============================================ -->
+                <!-- =============== LIBRARY ==================== -->
+                <!-- ============================================ -->
+                <section id="library" class="app-section hidden">
+                    <header class="mb-8">
+                        <h2 class="font-heading text-2xl lg:text-3xl font-bold text-slate-900">Biblioteca Viva</h2>
+                        <p class="text-slate-500 text-sm">Modelos validados pelos Tribunais Superiores.</p>
+                    </header>
+
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <!-- Card 1 -->
+                        <div class="group bg-white border border-slate-200 p-6 rounded-xl shadow-sm hover:shadow-md hover:border-primary-200 transition cursor-pointer">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="bg-primary-50 text-primary-600 w-10 h-10 rounded-lg flex items-center justify-center text-xl group-hover:scale-110 transition">
+                                    <i class="ph-fill ph-gavel"></i>
+                                </div>
+                                <span class="text-xs font-semibold bg-slate-100 text-slate-500 px-2 py-1 rounded">Cível</span>
+                            </div>
+                            <h3 class="font-bold text-slate-900 mb-1">Petição Inicial (Genérica)</h3>
+                            <p class="text-xs text-slate-500 mb-4 line-clamp-2">Estrutura completa com qualificação, fatos, fundamentos e pedidos atualizados CPC/15.</p>
+                            <div class="w-full h-1 bg-slate-100 rounded overflow-hidden">
+                                <div class="h-full bg-green-500 w-[98%]"></div>
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-1 text-right">98% Taxa de Aceitação</p>
+                        </div>
+
+                         <!-- Card 2 -->
+                         <div class="group bg-white border border-slate-200 p-6 rounded-xl shadow-sm hover:shadow-md hover:border-primary-200 transition cursor-pointer">
+                            <div class="flex justify-between items-start mb-4">
+                                <div class="bg-purple-50 text-purple-600 w-10 h-10 rounded-lg flex items-center justify-center text-xl group-hover:scale-110 transition">
+                                    <i class="ph-fill ph-users-three"></i>
+                                </div>
+                                <span class="text-xs font-semibold bg-slate-100 text-slate-500 px-2 py-1 rounded">Família</span>
+                            </div>
+                            <h3 class="font-bold text-slate-900 mb-1">Divórcio Consensual</h3>
+                            <p class="text-xs text-slate-500 mb-4 line-clamp-2">Modelo para divórcio em cartório ou judicial, com partilha de bens e guarda.</p>
+                             <div class="w-full h-1 bg-slate-100 rounded overflow-hidden">
+                                <div class="h-full bg-green-500 w-[95%]"></div>
+                            </div>
+                            <p class="text-[10px] text-slate-400 mt-1 text-right">95% Taxa de Aceitação</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ============================================ -->
+                <!-- ============= COMPRAR CRÉDITOS ============= -->
+                <!-- ============================================ -->
+                <section id="buy-credits" class="app-section hidden">
+                     <header class="mb-8 text-center max-w-2xl mx-auto">
+                        <h2 class="font-heading text-2xl lg:text-3xl font-bold text-slate-900">Recarregue seu escritório</h2>
+                        <p class="text-slate-500 text-sm mt-2">Escolha o pacote ideal para sua demanda.</p>
+                    </header>
+
+                    <div class="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+                        <!-- Basic -->
+                        <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm text-center hover:border-primary-300 transition">
+                            <h3 class="font-bold text-slate-700 mb-2">Avulso</h3>
+                            <div class="text-4xl font-extrabold text-slate-900 mb-1">20 <span class="text-sm font-normal text-slate-500">créditos</span></div>
+                            <p class="text-emerald-600 font-bold text-sm mb-6">R$ 49,90</p>
+                            <button class="w-full py-2.5 border border-slate-300 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition">Comprar</button>
+                        </div>
+
+                        <!-- Best Value -->
+                        <div class="bg-navy-900 text-white border border-navy-800 rounded-2xl p-8 shadow-xl text-center relative transform md:-translate-y-4">
+                             <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary-500 text-white px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wide shadow-md">Melhor Custo</div>
+                            <h3 class="font-bold text-primary-100 mb-2">Profissional</h3>
+                            <div class="text-4xl font-extrabold text-white mb-1">100 <span class="text-sm font-normal text-slate-400">créditos</span></div>
+                            <p class="text-primary-400 font-bold text-sm mb-6">R$ 149,90</p>
+                            <button class="w-full py-3 bg-primary-600 text-white font-bold rounded-xl hover:bg-primary-500 shadow-lg shadow-primary-600/20 transition">Comprar Agora</button>
+                        </div>
+
+                         <!-- High Volume -->
+                         <div class="bg-white border border-slate-200 rounded-2xl p-8 shadow-sm text-center hover:border-primary-300 transition">
+                            <h3 class="font-bold text-slate-700 mb-2">Escritório</h3>
+                            <div class="text-4xl font-extrabold text-slate-900 mb-1">300 <span class="text-sm font-normal text-slate-500">créditos</span></div>
+                            <p class="text-emerald-600 font-bold text-sm mb-6">R$ 299,90</p>
+                            <button class="w-full py-2.5 border border-slate-300 text-slate-700 font-bold rounded-xl hover:bg-slate-50 transition">Comprar</button>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Settings -->
+                <section id="settings" class="app-section hidden">
+                    <h2 class="font-heading text-2xl font-bold mb-6">Configurações</h2>
+
+                    <div class="grid lg:grid-cols-3 gap-6">
+
+                        <!-- =========================== -->
+                        <!-- COLUNA LATERAL (Menu interno) -->
+                        <!-- =========================== -->
+                        <div class="bg-white border border-slate-200 rounded-xl p-6 h-fit">
+                            <h3 class="text-sm font-semibold text-slate-700 mb-4 uppercase tracking-wide">Navegação</h3>
+
+                            <nav class="space-y-2 text-sm font-medium">
+                                <button 
+                                    class="w-full text-left px-4 py-2 rounded-lg bg-primary-50 text-primary-700"
+                                    onclick="openSettingsTab('perfil')"
+                                >
+                                    Meu Perfil
+                                </button>
+
+                                <button 
+                                    class="w-full text-left px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-50 transition"
+                                    onclick="openSettingsTab('seguranca')"
+                                >
+                                    Segurança & Senha
+                                </button>
+
+                                <button 
+                                    class="w-full text-left px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-50 transition"
+                                    onclick="openSettingsTab('notificacoes')"
+                                >
+                                    Notificações
+                                </button>
+
+                                <button 
+                                    class="w-full text-left px-4 py-2 rounded-lg text-slate-600 hover:bg-slate-50 transition"
+                                    onclick="openSettingsTab('faturamento')"
+                                >
+                                    Faturamento
+                                </button>
+                            </nav>
+                        </div>
+
+                        <!-- ============================== -->
+                        <!-- CONTEÚDO DAS CONFIGURAÇÕES -->
+                        <!-- ============================== -->
+                        <div class="lg:col-span-2">
+
+                            <!-- ======================= -->
+                            <!-- TAB: PERFIL -->
+                            <!-- ======================= -->
+                            <div id="settings-perfil" class="settings-tab block">
+
+                                <div class="bg-white p-8 rounded-xl border border-slate-200 mb-6">
+                                    <h3 class="font-heading text-xl font-bold mb-4">Informações da Conta</h3>
+
+                                    <div class="grid md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label class="text-sm font-semibold text-slate-700">Nome Completo</label>
+                                            <input id="settings-name" type="text"
+                                                class="w-full mt-1 px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"
+                                            >
+                                        </div>
+
+                                        <div>
+                                            <label class="text-sm font-semibold text-slate-700">E-mail Profissional</label>
+                                            <input id="settings-email" type="email"
+                                                class="w-full mt-1 px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-primary-500 outline-none"
+                                            >
+                                        </div>
+                                    </div>
+
+                                    <button 
+                                        onclick="saveSettingsProfile()"
+                                        class="mt-6 bg-primary-600 hover:bg-primary-700 text-white font-bold px-6 py-3 rounded-xl shadow-md shadow-primary-600/20 transition"
+                                    >
+                                        Salvar Alterações
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- ======================= -->
+                            <!-- TAB: SEGURANÇA -->
+                            <!-- ======================= -->
+                            <div id="settings-seguranca" class="settings-tab hidden">
+
+                                <div class="bg-white p-8 rounded-xl border border-slate-200">
+                                    <h3 class="font-heading text-xl font-bold mb-4">Alterar Senha</h3>
+
+                                    <div class="space-y-4">
+                                        <div>
+                                            <label class="text-sm font-semibold text-slate-700">Senha Atual</label>
+                                            <input type="password"
+                                                class="w-full mt-1 px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-primary-500 outline-none">
+                                        </div>
+
+                                        <div>
+                                            <label class="text-sm font-semibold text-slate-700">Nova Senha</label>
+                                            <input type="password"
+                                                class="w-full mt-1 px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-primary-500 outline-none">
+                                        </div>
+
+                                        <div>
+                                            <label class="text-sm font-semibold text-slate-700">Confirmar Nova Senha</label>
+                                            <input type="password"
+                                                class="w-full mt-1 px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 focus:ring-2 focus:ring-primary-500 outline-none">
+                                        </div>
+                                    </div>
+
+                                    <button 
+                                        onclick="showToast('Senha alterada com sucesso!', 'success')"
+                                        class="mt-6 bg-navy-900 hover:bg-primary-700 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg"
+                                    >
+                                        Atualizar Senha
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- ======================= -->
+                            <!-- TAB: NOTIFICAÇÕES -->
+                            <!-- ======================= -->
+                            <div id="settings-notificacoes" class="settings-tab hidden">
+
+                                <div class="bg-white p-8 rounded-xl border border-slate-200 space-y-6">
+                                    <h3 class="font-heading text-xl font-bold">Notificações</h3>
+
+                                    <label class="flex items-center gap-3 text-slate-700">
+                                        <input type="checkbox" class="w-5 h-5 text-primary-600 rounded focus:ring-primary-500">
+                                        Receber e-mails sobre novas jurisprudências
+                                    </label>
+
+                                    <label class="flex items-center gap-3 text-slate-700">
+                                        <input type="checkbox" class="w-5 h-5 text-primary-600 rounded focus:ring-primary-500">
+                                        Alertas sobre prazos processuais
+                                    </label>
+
+                                    <label class="flex items-center gap-3 text-slate-700">
+                                        <input type="checkbox" class="w-5 h-5 text-primary-600 rounded focus:ring-primary-500">
+                                        Aviso quando uma petição IA finalizar
+                                    </label>
+
+                                    <button 
+                                        onclick="showToast('Preferências de notificações atualizadas!', 'success')"
+                                        class="bg-primary-600 hover:bg-primary-700 text-white font-bold px-6 py-3 rounded-xl shadow-md transition"
+                                    >
+                                        Salvar Preferências
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- ======================= -->
+                            <!-- TAB: FATURAMENTO -->
+                            <!-- ======================= -->
+                            <div id="settings-faturamento" class="settings-tab hidden">
+
+                                <div class="bg-white p-8 rounded-xl border border-slate-200">
+                                    <h3 class="font-heading text-xl font-bold mb-6">Faturamento & Plano</h3>
+
+                                    <div class="mb-6">
+                                        <p class="text-sm text-slate-600">
+                                            <strong>Plano Atual:</strong> <span class="text-primary-600 font-bold" id="settings-plan"></span>
+                                        </p>
+                                    </div>
+
+                                    <button 
+                                        onclick="switchTab('buy-credits')"
+                                        class="bg-primary-600 hover:bg-primary-700 text-white font-bold px-6 py-3 rounded-xl shadow transition"
+                                    >
+                                        Gerenciar Plano
+                                    </button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </section>
+
+            </div> <!-- End Main Content Area -->
+        </main>
+    </div>
+
+
+</body>
+</html>
