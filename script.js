@@ -239,7 +239,7 @@ function setupDashboardActions() {
     });
 }
 
-/* ================== GERADOR IA (SIMULAÇÃO) ================== */
+/* ================== GERADOR IA (ATUALIZADO) ================== */
 
 async function handleGeneratePetition() {
 
@@ -263,37 +263,81 @@ async function handleGeneratePetition() {
         return;
     }
 
+    // Estado de Loading
     btn.disabled = true;
     const oldTxt = btn.innerHTML;
-    btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Gerando...`;
+    btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Escrevendo Petição...`;
 
     loadingOverlay?.classList.remove('hidden');
 
+    // Simulação de tempo de resposta da IA
     await sleep(2500);
 
     const dataHoje = new Date().toLocaleDateString('pt-BR');
+    const area = areaEl.value.split(' - ')[0]; // Pega só a área (Ex: Cível)
+    const acao = areaEl.value.split(' - ')[1] || 'Ação Judicial'; // Pega o tipo (Ex: Indenizatória)
 
+    // Geração do Template Jurídico Rico
     const generated = `
-        <h2 class="text-center font-bold">PEÇA GERADA VIA IA</h2>
-        <p><strong>Área:</strong> ${areaEl.value}</p>
-        <p><strong>Data:</strong> ${dataHoje}</p>
-        <hr><br>
-        <p>${inputEl.value}</p>
+        <div class="font-serif text-justify leading-relaxed text-slate-900">
+            <p class="text-center font-bold uppercase mb-8 text-sm">EXCELENTÍSSIMO SENHOR DOUTOR JUIZ DE DIREITO DA ___ VARA ${area.toUpperCase()} DA COMARCA DE SÃO PAULO/SP</p>
+
+            <p class="mb-6">
+                <strong>REQUERENTE</strong>, nacionalidade, estado civil, profissão, portador do RG nº XX.XXX.XXX-X, inscrito no CPF/MF sob o nº XXX.XXX.XXX-XX, residente e domiciliado na Rua Exemplo, nº 000, Bairro, Cidade/UF, vem, respeitosamente, à presença de Vossa Excelência, por seu advogado infra-assinado, propor a presente
+            </p>
+
+            <h3 class="text-center font-bold text-lg mb-6 uppercase border-y border-slate-200 py-2">
+                ${areaEl.value.toUpperCase()}
+            </h3>
+
+            <p class="mb-8">
+                em face de <strong>REQUERIDA S.A.</strong>, pessoa jurídica de direito privado, inscrita no CNPJ sob o nº XX.XXX.XXX/0001-XX, com sede na Rua da Empresa, nº 1000, pelos motivos de fato e de direito a seguir expostos:
+            </p>
+
+            <h4 class="font-bold uppercase text-sm border-b border-slate-300 pb-1 mb-3 mt-6">I. DOS FATOS</h4>
+            <p class="mb-4 text-slate-800">${inputEl.value}</p>
+            <p class="mb-4">Diante de tal cenário, restou infrutífera a tentativa de resolução amigável, não restando alternativa ao Autor senão socorrer-se do Poder Judiciário.</p>
+
+            <h4 class="font-bold uppercase text-sm border-b border-slate-300 pb-1 mb-3 mt-6">II. DO DIREITO</h4>
+            <p class="mb-4">A pretensão do Autor encontra amparo na legislação pátria e na jurisprudência consolidada dos Tribunais Superiores.</p>
+            
+            <div class="bg-slate-50 p-4 border-l-4 border-slate-300 text-sm italic text-slate-600 my-4">
+                "Aquele que, por ação ou omissão voluntária, negligência ou imprudência, violar direito e causar dano a outrem, ainda que exclusivamente moral, comete ato ilícito." (Art. 186, Código Civil).
+            </div>
+            
+            <p class="mb-4">Fica evidente o nexo causal entre a conduta da Ré e o dano suportado pelo Autor.</p>
+
+            <h4 class="font-bold uppercase text-sm border-b border-slate-300 pb-1 mb-3 mt-6">III. DOS PEDIDOS</h4>
+            <p class="mb-2">Diante do exposto, requer:</p>
+            <ol class="list-decimal pl-10 space-y-2 mb-8">
+                <li>A citação da Ré para, querendo, contestar a presente ação;</li>
+                <li>A procedência total dos pedidos para condenar a Ré;</li>
+                <li>A concessão dos benefícios da Justiça Gratuita;</li>
+                <li>A condenação em custas processuais e honorários advocatícios.</li>
+            </ol>
+
+            <p class="mb-2">Dá-se à causa o valor de R$ 10.000,00 (dez mil reais).</p>
+
+            <p class="text-center mt-12">Termos em que,<br>Pede deferimento.</p>
+            <p class="text-center mt-6 font-bold">${dataHoje}<br>ADVOGADO<br>OAB/UF 000.000</p>
+        </div>
     `;
 
+    // Atualização da UI
     loadingOverlay?.classList.add('hidden');
     editorPlaceholder?.classList.add('hidden');
 
     outputContainer.innerHTML = generated;
     outputContainer.classList.remove('hidden');
 
+    // Atualização do Estado
     appState.user.credits -= 5;
     appState.stats.petitionsCount++;
 
     appState.documents.unshift({
         id: Date.now(),
-        title: `Petição IA - ${areaEl.value}`,
-        area: areaEl.value,
+        title: `${acao} - ${area}`,
+        area: area,
         status: 'Finalizado',
         date: dataHoje,
         content: generated
@@ -377,7 +421,11 @@ function renderDocumentsTable() {
 function updateUI() {
 
     const nameEl = document.querySelector('#dashboard h2 span');
-    if (nameEl) nameEl.innerText = appState.user.name.split(' ')[1] || 'Advogado';
+    if (nameEl) {
+        // Fallback seguro caso o split falhe
+        const parts = appState.user.name.split(' ');
+        nameEl.innerText = parts.length > 1 ? parts[1] : parts[0];
+    }
 
     const creditsEl = document.getElementById('stat-credits');
     const petitionsEl = document.getElementById('stat-petitions');
